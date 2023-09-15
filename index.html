@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>To-Do List App</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" integrity="sha512-8bHTC73gkZ7rZ7vpqUQThUDhqcNFyYi2xgDgPDHc+GXVGHXq+xPjynxIopALmOPqzo9JZj0k6OqqewdGO3EsrQ==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.css" integrity="sha512-NXUhxhkDgZYOMjaIgd89zF2w51Mub53Ru3zCNp5LTlEzMbNNAjTjDbpURYGS5Mop2cU4b7re1nOIucsVlrx9fA==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="./js/mic.js" defer></script>
+    <script src="./js/auth.js" defer></script>
+</head>
+
+<body>
+
+    <div id="auth_screen" style="background-color: black; width: 100vw; height: 100vh; position: fixed; z-index: 1000; display: flex; justify-content: center; align-items: center;">
+        <div style="background-color: white; height: 40rem; width: 40vw; border-radius: 1rem;">
+            <h1 style="font-size: 3rem; margin: 1.5rem; text-align: center; margin-top: 4rem;;">Sign In</h1>
+            <div style="width: 100%; display: flex; justify-content: center; align-items: center;"><input type="text" id="username_input" style="font-size: 2rem; border: 0.5px solid gray; padding: 1rem; border-radius: 0.5rem; width: 80%; margin-top: 3rem; outline: none;" placeholder="Enter username." /></div>
+
+            <div style="width: 100%; display: flex; justify-content: center; align-items: center;"><input type="password" id="password_input" style="font-size: 2rem; border: 0.5px solid gray; padding: 1rem; border-radius: 0.5rem; width: 80%; margin-top: 3rem; outline: none;" placeholder="Enter password." /></div>
+            <div style="display: flex; justify-content: center; align-items: center; margin-top: 3rem;;">
+                <button id="submit_button" style="background-color: black; color: white; font-weight: bold; font-size: 2.5rem; padding: 1rem; border-radius: 0.5rem; width: 80%">Submit</button></div>
+        </div>
+
+        <div id="error_msg" style="background-color: red; color: white; font-size: 1.2rem; padding: 1.5rem; border-radius: 1rem; position: absolute; right: 1rem; top: -10rem; font-weight: bold; transition: all 250ms ease-in-out;">Either the username or password is not correct. Try Again.</div>
+
+
+    </div>
+    <div id="search_background" style="position: fixed; z-index: 1000; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.67); top: 0; left: 0; display: none; justify-content: center; align-items: center;">
+        <div style="width: 50%; border-radius: 0.5rem;display: flex; align-items: center; background-color: white; padding: 1rem; border: 0.5px solid black; font-size: 1.5rem;">
+            <input type="text" id="input_box" style="width: 100%;border: none; outline: none" placeholder="Enter text" />
+            <div class="mic_thing" id="mic_button">Mic</div>
+        </div>
+    </div>
+    <header class="main-header">
+        <div class="ui container">
+            <h1>To-Do List App</h1>
+
+        </div>
+    </header>
+    <div class="ui container">
+        <!-- Add Task -->
+        <form id="add-task" class="ui left icon input fluid">
+            <input id="add-task-input" class="large" type="text" placeholder="Write your task here..." />
+            <i class="tasks icon"></i>
+        </form>
+        <div id="buttons" class="ui stackable grid equal width">
+            <button id="clear-all-tasks" class="ui button column" onclick="showClearAllTasksModal()">
+          Clear all tasks
+        </button>
+            <button disabled class="ui button column" onclick="showClearCompletedTasksModal()">
+          Clear completed tasks
+        </button>
+        </div>
+        <ul id="tasks-list" class="ui segments"></ul>
+
+        <div id="edit-modal" class="ui tiny modal">
+            <div class="header">Update Your Task</div>
+            <div class="content">
+                <div class="ui fluid input">
+                    <input id="task-id" type="hidden" />
+                    <input id="task-text" type="text" />
+                </div>
+            </div>
+            <div class="actions">
+                <div class="ui cancel button">Cancel</div>
+                <div id="update-button" class="ui positive right labeled icon button">
+                    Update
+                    <i class="checkmark icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div id="remove-modal" class="ui tiny modal">
+            <div class="header">Delete Your Task</div>
+            <div class="content">
+                <div class="ui fluid input">
+                    <input id="task-id" type="hidden" />
+                    <p>Are you sure you want to delete your task?</p>
+                </div>
+            </div>
+            <div class="actions">
+                <div class="ui cancel red button">No</div>
+                <div id="remove-button" class="ui positive right labeled icon button">
+                    Yes
+                    <i class="checkmark icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div id="clear-all-tasks-modal" class="ui tiny modal">
+            <div class="header">Clear All Tasks</div>
+            <div class="content">
+                <div class="ui fluid input">
+                    <input id="task-id" type="hidden" />
+                    <p>Are you sure you want to clear all tasks?</p>
+                </div>
+            </div>
+            <div class="actions">
+                <div class="ui cancel red button">No</div>
+                <div id="remove-button" onclick="clearAllTasks()" class="ui positive right labeled icon button">
+                    Yes
+                    <i class="checkmark icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div id="clear-completed-tasks-modal" class="ui tiny modal">
+            <div class="header">Clear Completed Tasks</div>
+            <div class="content">
+                <div class="ui fluid input">
+                    <input id="task-id" type="hidden" />
+                    <p>Are you sure you want to clear completed tasks?</p>
+                </div>
+            </div>
+            <div class="actions">
+                <div class="ui cancel red button">No</div>
+                <div id="remove-button" onclick="clearAllTasks()" class="ui positive right labeled icon button">
+                    Yes
+                    <i class="checkmark icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.js" integrity="sha512-lOrm9FgT1LKOJRUXF3tp6QaMorJftUjowOWiDcG5GFZ/q7ukof19V0HKx/GWzXCdt9zYju3/KhBNdCLzK8b90Q==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js" integrity="sha512-dqw6X88iGgZlTsONxZK9ePmJEFrmHwpuMrsUChjAw1mRUhUITE5QU9pkcSox+ynfLhL15Sv2al5A0LVyDCmtUw==" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <h1 class="search_button">Search</h1>
+</body>
+
+</html>
